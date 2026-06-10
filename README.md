@@ -2,17 +2,17 @@
 
 **Talk to your [Folio](https://folio.no) business bank account from Claude.**
 
-An MCP server for the official [Folio API](https://api.folio.no/v2/api) — accounts, transactions, receipts, bookkeeping and payments as tools for Claude and any other MCP client.
+An MCP server for the official [Folio API](https://api.folio.no/v2/api). It exposes accounts, transactions, receipts, bookkeeping and payments as tools for Claude and any other MCP client.
 
 > *"Which card purchases from May are still missing receipts?"* · *"Upload this receipt to the Clas Ohlson purchase"* · *"What did we spend on advertising this quarter?"* · *"Draft the June rent payment"*
 
-Unofficial community project — not affiliated with Folio. Payments created through the API are always **drafts** that must be approved in the Folio app before any money moves.
+This is an unofficial community project, not affiliated with Folio. Payments created through the API are always **drafts** that must be approved in the Folio app before any money moves.
 
 ## Install
 
-You need a Folio API key — create one at [app.folio.no/til/api-tilgang](https://app.folio.no/til/api-tilgang).
+You need a Folio API key. Create one at [app.folio.no/til/api-tilgang](https://app.folio.no/til/api-tilgang).
 
-**Claude Desktop** — download the latest `folio-mcp.mcpb` from [Releases](https://github.com/henrikkvamme/folio-mcp/releases), double-click it, paste your API key. The key is stored in your OS keychain; nothing is sent anywhere except directly to Folio.
+**Claude Desktop:** Download the latest `folio-mcp.mcpb` from [Releases](https://github.com/henrikkvamme/folio-mcp/releases), double-click it and paste your API key. The key is stored in your OS keychain; nothing is sent anywhere except directly to Folio.
 
 **Claude Code**
 
@@ -20,7 +20,7 @@ You need a Folio API key — create one at [app.folio.no/til/api-tilgang](https:
 claude mcp add folio --env FOLIO_API_KEY=your-key -- npx -y @henrikkvamme/folio-mcp
 ```
 
-**Any MCP client** — stdio command `npx -y @henrikkvamme/folio-mcp` (or `bunx`) with `FOLIO_API_KEY` in the environment.
+**Any MCP client:** Run the stdio command `npx -y @henrikkvamme/folio-mcp` (or `bunx`) with `FOLIO_API_KEY` set in the environment.
 
 ## Tools
 
@@ -28,7 +28,7 @@ claude mcp add folio --env FOLIO_API_KEY=your-key -- npx -y @henrikkvamme/folio-
 |---|---|
 | **Read** | `list_accounts` · `get_account_balance` · `list_transactions` · `get_transaction` · `list_events` · `list_payments` · `get_payment` · `get_ledger_category` · `download_attachment` |
 | **Write** | `update_event` (purpose/note/participants/category) · `set_event_completion` · `upload_attachment` (receipts: PDF/PNG/JPEG) |
-| **Payments** | `create_payment` (draft — approved in the Folio app) · `cancel_payment` |
+| **Payments** | `create_payment` (creates a draft for approval in the Folio app) · `cancel_payment` |
 
 Receipts download as inline images. Ledger categories map to Norsk Standardkontoplan (NS4102) with VAT codes.
 
