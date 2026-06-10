@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>folio-mcp — Folio-kontoen din, rett i Claude</title>
+  <meta name="description" content="Åpen kildekode MCP-server som kobler Claude til Folio-bedriftskontoen din. Kjører lokalt — API-nøkkelen din forlater aldri maskinen.">
+  <meta property="og:title" content="folio-mcp — Folio-kontoen din, rett i Claude">
+  <meta property="og:description" content="Spør Claude om saldo, transaksjoner og bilag. Last ned, dobbeltklikk, lim inn API-nøkkel — ferdig.">
+  <meta name="color-scheme" content="light">
+  <link rel="preload" href="fonts/hanken-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <style>
+    @font-face {
+      font-family: "Hanken Grotesk";
+      font-style: normal;
+      font-weight: 400 900;
+      font-display: swap;
+      src: url("fonts/hanken-grotesk-latin.woff2") format("woff2");
+    }
+
+    :root {
+      --purple: #5A3DE6;
+      --purple-hover: #4D34C6;
+      --purple-deep: #3B2D81;
+      --ink: #1D1D1D;
+      --muted: #72707E;
+      --border: #CDCADB;
+      --bg: #F8F8FB;
+      --lavender: #DED8FA;
+      --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    ::selection { background: var(--lavender); color: var(--ink); }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: "Hanken Grotesk", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding: clamp(1.25rem, 3vh, 2.5rem) clamp(1.25rem, 5vw, 3rem);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .wordmark {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      margin-left: 1.5rem;
+      border-bottom: 1px solid transparent;
+    }
+    nav a:hover { color: var(--purple-deep); border-bottom-color: var(--purple-deep); }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      max-width: 46rem;
+      margin: 0 auto;
+      width: 100%;
+      gap: clamp(1.25rem, 3.5vh, 2.25rem);
+      padding: 2rem 0;
+    }
+
+    h1 {
+      font-weight: 900;
+      font-size: clamp(2.5rem, 7vw, 4.25rem);
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      text-wrap: balance;
+    }
+
+    .sub {
+      font-size: clamp(1rem, 1.5vw, 1.125rem);
+      color: var(--muted);
+      max-width: 36rem;
+      text-wrap: balance;
+    }
+
+    .prompt {
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      color: var(--purple-deep);
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.55rem 0.9rem;
+    }
+
+    .steps {
+      display: flex;
+      gap: clamp(1rem, 4vw, 2.5rem);
+      justify-content: center;
+      flex-wrap: wrap;
+      text-align: left;
+    }
+
+    .step {
+      max-width: 11.5rem;
+    }
+
+    .step b {
+      display: block;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .step b::before {
+      content: attr(data-n) "  ";
+      color: var(--purple);
+      font-family: var(--mono);
+      font-weight: 400;
+    }
+    .step span {
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+    .step code { font-family: var(--mono); font-size: 0.8rem; }
+    .step a { color: var(--purple); text-decoration: none; border-bottom: 1px solid var(--lavender); }
+    .step a:hover { color: var(--purple-deep); }
+
+    .cta {
+      display: inline-block;
+      background: var(--purple);
+      color: #fff;
+      font-weight: 600;
+      font-size: 1.05rem;
+      text-decoration: none;
+      padding: 0.85rem 1.5rem 0.95rem;
+      border-radius: 8px;
+      box-shadow: inset 0 -3px var(--purple-deep);
+    }
+    .cta:hover { background: var(--purple-hover); }
+    .cta:active { transform: translateY(1px); box-shadow: inset 0 -2px var(--purple-deep); }
+    .cta:focus-visible { outline: 2px solid var(--purple); outline-offset: 4px; border-radius: 12px; }
+
+    .cta-meta {
+      display: block;
+      margin-top: 0.7rem;
+      font-size: 0.825rem;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    .dev {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .dev code {
+      font-family: var(--mono);
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.1rem 0.4rem;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .cta { transition: background 0.2s, transform 0.1s; }
+    }
+
+    @media (max-width: 560px) {
+      .steps { flex-direction: column; align-items: center; text-align: center; gap: 0.9rem; }
+      .step { max-width: 22rem; }
+      .prompt { font-size: 0.8rem; }
+      .dev { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="wordmark" href="">folio-mcp</a>
+    <nav>
+      <a href="https://github.com/henrikkvamme/folio-mcp">GitHub</a>
+      <a href="https://www.npmjs.com/package/@henrikkvamme/folio-mcp">npm</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Folio-kontoen din,<br>rett i Claude.</h1>
+
+    <p class="sub">
+      Saldo, transaksjoner, bilag og betalingsutkast — som verktøy for Claude.
+      Kjører lokalt på din maskin, og API-nøkkelen lagres kun i nøkkelringen din.
+    </p>
+
+    <p class="prompt">«Hvilke kortkjøp fra mai mangler fortsatt kvittering?»</p>
+
+    <div class="steps">
+      <div class="step">
+        <b data-n="1">Last ned</b>
+        <span><code>folio-mcp.mcpb</code> — én liten fil</span>
+      </div>
+      <div class="step">
+        <b data-n="2">Dobbeltklikk</b>
+        <span>Claude Desktop installerer den selv</span>
+      </div>
+      <div class="step">
+        <b data-n="3">Lim inn API-nøkkel</b>
+        <span>Hent den under <a href="https://app.folio.no/til/api-tilgang">API-tilgang i Folio</a></span>
+      </div>
+    </div>
+
+    <div>
+      <a class="cta" href="https://github.com/henrikkvamme/folio-mcp/releases/latest/download/folio-mcp.mcpb">
+        Last ned for Claude&nbsp;Desktop
+      </a>
+      <span class="cta-meta">v0.1.0 · 177 kB · macOS og Windows · gratis</span>
+    </div>
+
+    <p class="dev">Claude Code eller annen MCP-klient? <code>npx -y @henrikkvamme/folio-mcp</code></p>
+  </main>
+
+  <footer>
+    Åpen kildekode (MIT) · Uoffisielt prosjekt — ikke tilknyttet Folio ·
+    Betalinger blir kun utkast som du selv godkjenner i Folio-appen
+  </footer>
+</body>
+</html>
