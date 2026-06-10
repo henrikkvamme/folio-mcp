@@ -1,0 +1,35 @@
+{
+  "manifest_version": "0.3",
+  "name": "folio-mcp",
+  "display_name": "Folio",
+  "version": "0.1.0",
+  "description": "Koble Claude til Folio-bedriftskontoen din — saldo, transaksjoner, bilag og betalinger.",
+  "long_description": "Gir Claude tilgang til Folio-kontoen din via Folios offisielle API: se kontoer og saldo, søk i transaksjoner og hendelser, last opp og ned bilag/kvitteringer, oppdater formål og deltakere for regnskapet, og opprett betalingsutkast (som alltid må godkjennes i Folio-appen før penger flyttes).",
+  "author": {
+    "name": "Henrik Halvorsen Kvamme"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/dist/index.js"],
+      "env": {
+        "FOLIO_API_KEY": "${user_config.folio_api_key}"
+      }
+    }
+  },
+  "user_config": {
+    "folio_api_key": {
+      "type": "string",
+      "title": "Folio API-nøkkel",
+      "description": "Opprett en API-nøkkel på https://app.folio.no/til/api-tilgang og lim den inn her. Nøkkelen lagres kun lokalt i nøkkelringen din.",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": { "node": ">=18.0.0" }
+  }
+}

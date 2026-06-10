@@ -1,0 +1,1299 @@
+openapi: '3.0.3'
+info:
+  title: Folio API
+  version: '1.0'
+  description: >
+    API for Folio. Users can authenticate with an API key. You can create an API
+    key at
+    <a href="https://app.folio.no/til/api-tilgang">api-tilgang</a>.
+
+    <p>Companies can create an oauth2-flow. The code
+    token and refresh token exchange is described in the
+    <a href="oauth2.html">oauth2 openapi definition</a>.</p>
+servers:
+  - url: https://api.folio.no/v2
+    description: Production server
+
+paths:
+  /transactions:
+    get:
+      description: 'Get transactions'
+      parameters:
+        - name: startDate
+          in: query
+          description: 'The earliest date to get transactions from (inclusive)'
+          required: true
+          schema:
+            type: string
+            format: date
+            example: '2024-01-01'
+        - name: endDate
+          in: query
+          description: 'The last date to get transactions from (inclusive), or today'
+          required: false
+          schema:
+            type: string
+            format: date
+            example: '2025-01-01'
+        - name: includeMerchants
+          in: query
+          description: 'Include merchant information in result (defaults to false)'
+          required: false
+          schema:
+            type: boolean
+            example: 'true'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+  /transactions/{id}:
+    get:
+      description: 'Get transaction by id'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '404':
+          description: Not found
+  /accounts:
+    get:
+      description: 'Get accounts'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountsResponse'
+  /accounts/{accountNumber}/transactions:
+    get:
+      description: 'Get transactions for account'
+      parameters:
+        - name: accountNumber
+          in: path
+          description: 'The account number to get transactions for'
+          required: true
+          schema:
+            type: string
+            example: '36060000000'
+        - name: startDate
+          in: query
+          description: 'The earliest date to get transactions from (inclusive)'
+          required: true
+          schema:
+            type: string
+            format: date
+            example: '2024-01-01'
+        - name: endDate
+          in: query
+          description: 'The last date to get transactions from (inclusive), or today'
+          required: false
+          schema:
+            type: string
+            format: date
+            example: '2025-01-01'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+  /accounts/{accountNumber}/balance/{date}:
+    get:
+      description: 'Get historical balance for account'
+      parameters:
+        - name: accountNumber
+          in: path
+          description: 'The account number to get historical balance for'
+          required: true
+          schema:
+            type: string
+            example: '36060000000'
+        - name: date
+          in: path
+          description: 'Which date to get balance for'
+          required: true
+          schema:
+            type: string
+            format: date
+            example: '2024-01-01'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountBalance'
+  /payments:
+    post:
+      description: 'Create a new payment'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePayment"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreatePaymentResponse"
+    get:
+      description: 'Get payments'
+      parameters:
+        - name: startDate
+          in: query
+          description: 'The earliest date to get payments from (inclusive)'
+          required: true
+          schema:
+            type: string
+            format: date
+            example: '2024-01-01'
+        - name: endDate
+          in: query
+          description: 'The last date to get payments from (inclusive), or today'
+          required: false
+          schema:
+            type: string
+            format: date
+            example: '2025-01-01'
+        - name: includeAgents
+          in: query
+          description: 'Include agent information in result (defaults to false)'
+          required: false
+          schema:
+            type: boolean
+            example: 'true'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentsResponse'
+  /payments/{id}:
+    delete:
+      description: 'Soft-delete a payment. It will still be present, but with status Cancelled'
+      parameters:
+        - name: id
+          in: path
+          description: 'The payment id'
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+      responses:
+        '202':
+          description: Accepted
+    get:
+      description: 'Get a single payment'
+      parameters:
+        - name: id
+          in: path
+          description: 'The payment id'
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payment"
+  /events:
+    get:
+      description: 'Get events (anything that is or will end up as a transaction)'
+      parameters:
+        - name: startDate
+          in: query
+          description: 'The earliest date to get events from (inclusive)'
+          required: true
+          schema:
+            type: string
+            format: date
+            example: '2024-01-01'
+        - name: endDate
+          in: query
+          description: 'The last date to get events from (inclusive), or today'
+          required: false
+          schema:
+            type: string
+            format: date
+            example: '2025-01-01'
+        - name: includeMerchants
+          in: query
+          description: 'Include merchant information in result (defaults to false)'
+          required: false
+          schema:
+            type: boolean
+            example: 'true'
+        - name: includeAgents
+          in: query
+          description: 'Include agent information in result (defaults to false)'
+          required: false
+          schema:
+            type: boolean
+            example: 'true'
+        - name: includeCards
+          in: query
+          description: 'Include card information in result (defaults to false)'
+          required: false
+          schema:
+            type: boolean
+            example: 'true'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventsResponse'
+  /events/{id}:
+    patch:
+      description: 'Update fields on an event. Omitting a field leaves it unchanged; setting a field to empty string removes the value'
+      parameters:
+        - name: id
+          in: path
+          description: 'The event id'
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchEvent'
+      responses:
+        '202':
+          description: Accepted
+        '400':
+          description: 'Bad request, when for instance the category id is invalid'
+        '403':
+          description: 'Forbidden, also including if the event is not found'
+  /events/{id}/attachments:
+    post:
+      description: 'Add an attachment'
+      x-codeSamples:
+        - lang: "curl"
+          label: "Shell Curl"
+          source: |
+            curl https://api.folio.no/v2/events/457f0b7c-e3d6-44bf-9364-638b3d39dc7a/attachments \
+            --request POST \
+            --header 'Authorization: Bearer YOUR_SECRET_TOKEN' \
+            --header 'Content-Type: image/png' \
+            --data-binary @receipt.png
+      parameters:
+        - name: id
+          in: path
+          description: 'The event id'
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            example: image/png
+        - name: Content-Disposition
+          in: header
+          description: 'A place to put the filename'
+          required: false
+          schema:
+            type: string
+            example: attachment; filename="receipt.pdf"
+      requestBody:
+        required: true
+        content:
+          application/pdf:
+            schema:
+              type: string
+              format: binary
+          image/jpeg:
+            schema:
+              type: string
+              format: binary
+          image/png:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateAttachmentResponse"
+  /events/{id}/complete:
+    post:
+      description: 'Mark the event as complete'
+      parameters:
+        - name: id
+          in: path
+          description: 'The event id'
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+      responses:
+        '202':
+          description: Accepted
+    delete:
+      description: 'Remove previously set completion. Note that other systems might have set it to complete, in which case it will still be seen as complete by the system'
+      parameters:
+        - name: id
+          in: path
+          description: 'The event id'
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+      responses:
+        '202':
+          description: Accepted
+  /attachments/{id}/{type}:
+    get:
+      description: 'Get an attachment'
+      parameters:
+        - name: id
+          in: path
+          description: 'The attachment id'
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        - name: type
+          in: path
+          description: 'The format of the attachment. Original is the attachment as uploaded by the user (image or pdf), cropped is an automatic attempt at cropping and rotating to only show the attachment, and the rest are square thumbnail versions'
+          required: true
+          schema:
+            type: string
+            enum: ['original', 'cropped', '128x128', '256x256', '512x512']
+            example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+      responses:
+        '200':
+          description: The binary file of the attachment
+  /categories/{id}:
+    get:
+      description: 'Get a ledger category'
+      parameters:
+        - name: id
+          in: path
+          description: 'The category id'
+          required: true
+          schema:
+            type: string
+            example: 'Ue2QvIr9cu0xUyiKrO5Hhv'
+      responses:
+        '200':
+          description: OK
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LedgerCategory"
+  /integration/disable:
+    post:
+      description: 'Disable all integrations from this client (client in an oauth2 sense). To "re-enable", go through another oauth2-flow'
+      responses:
+        '202':
+          description: Accepted
+  /statement/{year}/{month}:
+    get:
+      description: 'Get a bank statement for the given month'
+      parameters:
+        - name: year
+          in: path
+          description: 'The year of the statement'
+          required: true
+          schema:
+            type: integer
+            example: 2024
+        - name: month
+          in: path
+          description: 'The month of the statement'
+          required: true
+          schema:
+            type: integer
+            example: 4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '501':
+          description: 'This feature is currently not exposed, so it will always return "not implemented"'
+  /statement:
+    get:
+      description: 'Get a bank statement for the time range'
+      parameters:
+        - name: startDate
+          in: query
+          description: 'The earliest date (inclusive) for transactions in the bank statement'
+          required: true
+          schema:
+            type: string
+            format: date
+            example: '2024-01-01'
+        - name: endDate
+          in: query
+          description: 'The last date (inclusive) for transactions in the bank statement'
+          required: true
+          schema:
+            type: string
+            format: date
+            example: '2025-01-01'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '501':
+          description: 'This feature is currently not exposed, so it will always return "not implemented"'
+components:
+  schemas:
+    AccountBalance:
+      type: object
+      properties:
+        incomingBalance:
+          description: 'Balance at start of day. Will be missing if account was not open at this time'
+          type: string
+          format: decimal
+          pattern: '^\d+\.\d+$'
+          example: "1000.00"
+        outgoingBalance:
+          description: 'Balance at end of day. Will be missing if account was not open at this time'
+          type: string
+          format: decimal
+          pattern: '^\d+\.\d+$'
+          example: "1000.00"
+    AccountsResponse:
+      type: object
+      required:
+        - accounts
+      properties:
+        accounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Account"
+    Account:
+      type: object
+      required:
+        - accountNumber
+        - balance
+        - balanceUpdatedAt
+        - matchingTransactionsAt
+        - completeTransactionsAt
+        - name
+        - type
+      properties:
+        accountNumber:
+          description: 'Account number'
+          type: string
+          example: '36060000000'
+        balance:
+          type: string
+          format: decimal
+          pattern: '^\d+\.\d+$'
+          example: "1000.00"
+        balanceUpdatedAt:
+          description: 'Last time the balance changed'
+          type: string
+          format: date-time
+          example: '2025-01-13T13:37:00Z'
+        matchingTransactionsAt:
+          description: 'Last date where the balance matches the transactions (that is, there is no pending transaction data)'
+          type: string
+          format: date-time
+          example: '2025-01-13T13:37:00Z'
+        completeTransactionsAt:
+          description: 'Last date where the balance matches the transactions and all are marked complete (i.e. all attachments, purpose, etc are present)'
+          type: string
+          format: date-time
+          example: '2025-01-13T13:37:00Z'
+        name:
+          description: 'Descriptive name'
+          type: string
+        type:
+          description: 'Account type'
+          type: string
+          enum:
+            - Card
+            - Earmarks
+            - Operational
+            - Tax
+            - Savings
+    AgentInfo:
+      description: 'An agent is a human or integration'
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        name:
+          description: 'Full name of user'
+          type: string
+          example: 'Ola Nordmann'
+    CardInfo:
+      type: object
+      required:
+        - id
+        - accountName
+        - accountNumber
+        - ownerAgentId
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        accountName:
+          description: 'Name of the account'
+          format: string
+          example: 'My card account'
+        accountNumber:
+          description: 'Associated account number (BBAN)'
+          type: string
+          example: '9836061277190'
+        ownerAgentId:
+          description: 'Agent owning the card'
+          type: string
+          format: uuid
+          example: '8f1fc8d3-7900-4c05-8d67-f513ef760111'
+    TransactionAmount:
+      type: object
+      required:
+        - amount
+        - currency
+      properties:
+        amount:
+          type: string
+          format: decimal
+          pattern: '^\d+\.\d{2}$'
+          example: "1000.00"
+        currency:
+          type: string
+          example: "NOK"
+    CurrencyAmount:
+      type: object
+      required:
+        - amount
+        - currency
+      properties:
+        amount:
+          type: string
+          format: decimal
+          pattern: '^\d+\.\d+$'
+          example: "1000.00"
+        currency:
+          type: string
+          example: "EUR"
+    Transaction:
+      type: object
+      required:
+        - id
+        - eventId
+        - description
+        - bookingDate
+        - transactionAmount
+        - currencyAmount
+        - creditor
+        - debtor
+        - attachments
+        - complete
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        eventId:
+          type: string
+          format: uuid
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        paymentId:
+          description: 'Present if the transaction the result of a payment'
+          type: string
+          format: uuid
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        description:
+          type: string
+        bookingDate:
+          type: string
+          format: date
+          example: '2025-02-25'
+        kid:
+          type: string
+          description: 'KID number, if present'
+          pattern: '^\d+-?$'
+          example: '1248103'
+        creditorEventId:
+          description: 'Present if this is an internal transfer, on both credit and debit side. Both sides will point to the crediting event.'
+          type: string
+          format: uuid
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        cardAuthorization:
+          $ref: "#/components/schemas/CardAuthorization"
+        creditor:
+          $ref: "#/components/schemas/Creditor"
+        debtor:
+          $ref: "#/components/schemas/Debtor"
+        transactionAmount:
+          $ref: "#/components/schemas/TransactionAmount"
+        currencyAmount:
+          $ref: "#/components/schemas/CurrencyAmount"
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attachment"
+        purpose:
+          type: string
+          description: "User provided description of the transaction's purpose"
+        note:
+          type: string
+          description: "User provided note for the transaction"
+        participants:
+          type: string
+          description: "User provided list of who participated"
+        complete:
+          type: boolean
+          description: "If true, transaction has all documentation required for accounting: participants, purpose, etc"
+        ledgerCategory:
+          $ref: "#/components/schemas/LedgerCategoryReference"
+    TransactionOnly:
+      type: object
+      required:
+        - id
+        - description
+        - bookingDate
+        - transactionAmount
+        - currencyAmount
+        - creditor
+        - debtor
+        - attachments
+        - complete
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        description:
+          type: string
+        bookingDate:
+          type: string
+          format: date
+          example: '2025-02-25'
+        kid:
+          type: string
+          description: 'KID number, if present'
+          pattern: '^\d+-?$'
+          example: '1248103'
+        creditor:
+          $ref: "#/components/schemas/Creditor"
+        debtor:
+          $ref: "#/components/schemas/Debtor"
+        transactionAmount:
+          $ref: "#/components/schemas/TransactionAmount"
+        currencyAmount:
+          $ref: "#/components/schemas/CurrencyAmount"
+    Event:
+      type: object
+      required:
+        - id
+        - time
+        - amount
+        - attachments
+        - transactions
+        - complete
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        amount:
+          $ref: "#/components/schemas/CurrencyAmount"
+        time:
+          description: "Time of event"
+          type: string
+          format: date-time
+          example: '2025-01-13T13:37:00Z'
+        transactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/TransactionOnly"
+        payment:
+          description: 'Present if this is a payment'
+          $ref: "#/components/schemas/Payment"
+        cardAuthorization:
+          $ref: "#/components/schemas/CardAuthorization"
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attachment"
+        purpose:
+          type: string
+          description: "User provided description of the transaction's purpose"
+        note:
+          type: string
+          description: "User provided note for the transaction"
+        participants:
+          type: string
+          description: "User provided list of who participated"
+        complete:
+          type: boolean
+          description: "If true, transaction has all documentation required for accounting: participants, purpose, etc"
+        ledgerCategory:
+          $ref: "#/components/schemas/LedgerCategoryReference"
+    Attachment:
+      type: object
+      required:
+        - id
+        - mimeType
+        - orgNum
+        - fileSize
+        - uploadedByAgentId
+        - averageColor
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: '8f1fc8d3-7900-4c05-8d67-f513ef760111'
+        filename:
+          description: 'Name of original file if specified when uploaded, or a generated name'
+          type: string
+          example: 'invoice.pdf'
+        mimeType:
+          description: 'Original mime type. Thumbnails will be images even if the original is e.g. pdf'
+          type: string
+          example: 'application/pdf'
+        merchantId:
+          description: 'Best guess at merchant from document'
+          type: string
+          example: 'x71c3e9g932b0163ca'
+        orgNum:
+          description: 'Best guess at organization number from document'
+          type: string
+        terminalId:
+          description: 'Best guess at card terminal id from document'
+          type: string
+        extractedText:
+          type: string
+        uploadedByAgentId:
+          description: 'Person or service that uploaded the document. Use `includeAgents` to get more information.'
+          type: string
+          format: uuid
+          example: '8f1fc8d3-7900-4c05-8d67-f513ef760111'
+        averageColor:
+          description: 'Average color of document that can be used as a placeholder while loading the document'
+          type: string
+          example: '#feddfe'
+        fileSize:
+          description: 'File size of original attachment in bytes'
+          type: integer
+          example: 1337
+    Transactions:
+      type: object
+      required:
+        - booked
+      properties:
+        booked:
+          type: array
+          items:
+            $ref: "#/components/schemas/Transaction"
+    TransactionResponse:
+      type: object
+      properties:
+        transactions:
+          $ref: "#/components/schemas/Transactions"
+        includes:
+          $ref: "#/components/schemas/TransactionIncludes"
+    TransactionIncludes:
+      type: object
+      properties:
+        merchants:
+          type: array
+          items:
+            $ref: "#/components/schemas/MerchantInfo"
+    EventsResponse:
+      type: object
+      required:
+        - events
+      properties:
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        includes:
+          $ref: "#/components/schemas/EventIncludes"
+    EventIncludes:
+      type: object
+      properties:
+        merchants:
+          type: array
+          items:
+            $ref: "#/components/schemas/MerchantInfo"
+        agents:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentInfo"
+        cards:
+          type: array
+          items:
+            $ref: "#/components/schemas/CardInfo"
+    PaymentsResponse:
+      type: object
+      required:
+        - payments
+      properties:
+        payments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Payment"
+        includes:
+          $ref: "#/components/schemas/PaymentIncludes"
+    PaymentIncludes:
+      type: object
+      properties:
+        agents:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentInfo"
+    CardAuthorization:
+      type: object
+      required:
+        - cardId
+        - merchantId
+        - merchantName
+        - mcc
+        - terminalId
+        - physicalTerminal
+        - currencyAmount
+      properties:
+        cardId:
+          type: string
+          format: uuid
+          example: '8f1fc8d3-7900-4c05-8d67-f513ef760111'
+        merchantId:
+          type: string
+          example: '285f4fe1-00aa-40cf-8d22-d7b024473bbb'
+        merchantName:
+          type: string
+          example: 'KAFFEBRENNERIET'
+        mcc:
+          type: integer
+          description: 'Merchant Category Code. Four digit number to classify the business'
+          example: 5542
+        terminalId:
+          type: string
+          description: 'External id of the payment terminal'
+          example: '14655964'
+        physicalTerminal:
+          type: boolean
+          description: 'Is the reservation done on a physical terminal (as opposed to for example online)'
+          example: true
+        currencyAmount:
+          $ref: "#/components/schemas/CurrencyAmount"
+    Creditor:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'Ola Nordmann'
+        accountNumber:
+          type: string
+          description: 'BBAN or IBAN'
+          example: '9836061277190'
+    CreditorRequired:
+      type: object
+      required:
+        - name
+        - accountNumber
+      properties:
+        name:
+          type: string
+          example: 'Ola Nordmann'
+        accountNumber:
+          type: string
+          description: 'BBAN or IBAN'
+          example: '9836061277190'
+    Debtor:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'Ola Nordmann'
+        accountNumber:
+          type: string
+          description: 'BBAN'
+          example: '9836061277190'
+    CreatePayment:
+      type: object
+      required:
+        - creditor
+        - debtorAccountNumber
+        - currencyAmount
+        - executionDate
+      properties:
+        creditor:
+          $ref: "#/components/schemas/CreditorRequired"
+        debtorAccountNumber:
+          type: string
+          example: '9836061277190'
+        currencyAmount:
+          $ref: "#/components/schemas/CurrencyAmount"
+        foreignPaymentInfo:
+          description: "Must be present if it's a foreign payment, i.e. in a different currency than NOK"
+          $ref: "#/components/schemas/ForeignPaymentInfo"
+        executionDate:
+          type: string
+          format: date
+          example: '2024-01-15'
+        kid:
+          type: string
+          description: 'Must be valid KID number. If set, message cannot be set'
+          pattern: '^\d+-?$'
+          example: '1248103'
+        message:
+          type: string
+          description: 'If set, kid cannot be set'
+          example: 'Here you go!'
+    CreatePaymentResponse:
+      type: object
+      required:
+        - id
+        - eventId
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        eventId:
+          type: string
+          format: uuid
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+    ForeignPaymentInfo:
+      type: object
+      required:
+        - currency
+        - reportingInfo
+        - paymentType
+        - creditorAddress
+      properties:
+        reportingInfo:
+          type: string
+          description: "Information about the payment. Not more than 35 characters"
+        paymentType:
+          type: string
+          enum:
+            - DirectCapitalInvestment
+            - DirectShareInvestment
+            - Dividend
+            - InheritanceGiftEtc
+            - Interest
+            - LifeInsuranceOrPension
+            - OtherCapitalDividend
+            - OtherFinanceInvestments
+            - OtherPurchaseOrSaleOfServices
+            - PortfolioBondsAndCertificates
+            - PortfolioDerivates
+            - PortfolioShares
+            - PurchaseOfSaleOfProperty
+            - PurchaseOrSaleOfGoods
+            - Rent
+            - Salary
+        creditorAddress:
+          $ref: "#/components/schemas/ForeignCreditorAddress"
+    ForeignCreditorAddress:
+      type: object
+      required:
+        - streetName
+        - postCode
+        - townName
+        - country
+      properties:
+        streetName:
+          type: string
+        postCode:
+          type: string
+        townName:
+          type: string
+        country:
+          type: string
+    Payment:
+      type: object
+      required:
+        - id
+        - eventId
+        - createdAt
+        - createdByAgentId
+        - state
+        - creditor
+        - debtorAccountNumber
+        - currencyAmount
+        - executionDate
+      properties:
+        id:
+          description: "ID for payment"
+          type: string
+          format: uuid
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        eventId:
+          description: "ID of corresponding event"
+          type: string
+          format: uuid
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        transactionId:
+          description: "ID of corresponding transaction, if payment is complete"
+          type: string
+          format: uuid
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        createdAt:
+          description: "Time of creation"
+          type: string
+          format: date-time
+          example: '2025-01-13T13:37:00Z'
+        createdByAgentId:
+          description: "Created by this agent"
+          type: string
+          format: uuid
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        signedByAgentId:
+          description: "If signed, signed by this person"
+          type: string
+          format: uuid
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        state:
+          description: >
+            Current state of the payment
+            * `Draft` - Payment has been created, but not submitted to the bank
+            * `InProcess` - Payment has been approved and accepted for execution. The payment may be stopped, reverting status to `Draft`
+            * `Completed` - Payment has been completed
+            * `Cancelled` - Payment was cancelled by user, and cannot be reapproved by user
+            * `Rejected` - Payment was rejected due to insufficient funds. Can be reapproved by user
+            * `RetryingInsufficientFunds` - Payment is active, but cannot be completed due to insufficient funds. Will retry for several days before receiving status `Rejected`
+          type: string
+          enum:
+            - Draft
+            - InProcess
+            - Completed
+            - Cancelled
+            - Rejected
+            - RetryingInsufficientFunds
+        creditor:
+          $ref: "#/components/schemas/CreditorRequired"
+        debtorAccountNumber:
+          type: string
+          example: '9836061277190'
+        currencyAmount:
+          $ref: "#/components/schemas/CurrencyAmount"
+        executionDate:
+          type: string
+          format: date
+          example: '2024-01-15'
+        kid:
+          type: string
+          description: 'If set, message will not be set'
+          pattern: '^\d+-?$'
+          example: '1248103'
+        message:
+          type: string
+          description: 'If set, kid will not be set'
+          example: 'Here you go!'
+    CreateAttachmentResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          description: "ID of newly created attachment"
+          type: string
+          format: uuid
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+    LedgerCategoryReference:
+      type: object
+      required:
+        - id
+        - eTag
+      properties:
+        id:
+          description: "Ledger category as set by user or Folio"
+          type: string
+          example: 'Ue2QvIr9cu0xUyiKrO5Hhv'
+        eTag:
+          description: 'An opaque string which is changed when any field in the corresponding category was updated; for caching'
+          type: string
+          example: 'XhhimrTyxEmgdYDSTg5vJ58rqSQSn-ANli012oLlNPE'
+    LedgerCategory:
+      type: object
+      required:
+        - accountName
+        - accountNumber
+        - isIncoming
+        - requiresAttachment
+        - requiresParticipants
+        - requiresPurpose
+        - requiresReview
+        - title
+        - version
+        - vatCode
+        - vatRate
+        - vatTitle
+      properties:
+        accountName:
+          type: string
+          description: 'The name of the account. A one-to-one mapping with the account number'
+          example: 'Reklamekostnad'
+        accountNumber:
+          type: integer
+          description: 'Account number according to Norsk Standardkontoplan NS4102'
+          example: 7320
+        isIncoming:
+          type: boolean
+          description: 'True if transaction is incoming, otherwise outgoing'
+          example: true
+        requiresParticipants:
+          type: boolean
+          description: 'To be marked "complete", the user must fill out participants for the transaction'
+          example: true
+        requiresPurpose:
+          type: boolean
+          description: 'To be marked "complete", the user must fill out purpose for the transaction'
+          example: true
+        requiresAttachment:
+          type: boolean
+          description: 'To be marked "complete", the user must add an attachment (receipt or other documentation) to the transaction'
+          example: true
+        requiresReview:
+          type: boolean
+          description: 'Does not affect the "complete" flag. This is a hint to the accounting system that it should make sure an accountant reviews the transaction'
+          example: true
+        title:
+          type: string
+          description: 'The title of the category. Multiple categories can use the same account number/name'
+          example: 'Annonsering (Markedsføring)'
+        vatCode:
+          type: integer
+          description: 'Standard Norwegian VAT code, SAF-T'
+          example: 1
+        vatRate:
+          type: integer
+          description: 'VAT rate in percentage'
+          example: 25
+        vatTitle:
+          type: string
+          description: 'VAT category title'
+          example: "Inngående mva, høy sats"
+    PatchEvent:
+      type: object
+      properties:
+        purpose:
+          type: string
+          description: 'Purpose of the transaction. Set to empty string to remove. Setting or removing this will re-evaluate the complete flag using the ledger category required fields'
+          example: 'Team lunch'
+        note:
+          type: string
+          description: 'Note for the transaction. Set to empty string to remove.'
+          example: 'Remember to split with marketing'
+        participants:
+          type: string
+          description: 'List of who participated. Set to empty string to remove. Setting or removing this will re-evaluate the complete flag using the ledger category required fields'
+          example: 'Fats Waller, Ella Fitzgerald'
+        ledgerCategoryId:
+          type: string
+          description: 'Ledger category id for the event. Once set, can not be removed, only overwritten. Setting this will re-evaluate the complete flag using the ledger category required fields'
+          example: 'Ue2QvIr9cu0xUyiKrO5Hhv'
+    MerchantInfo:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 'Merchant id'
+          example: '457f0b7c-e3d6-44bf-9364-638b3d39dc7a'
+        name:
+          type: string
+          description: 'Name of merchant as a human would call it, not the technical name of the terminal'
+          example: 'Gulating Oslo Sentrum'
+        postalAddress:
+          type: string
+          example: 'Storgata 32, Gunerius Shoppingsenter'
+        postalCode:
+          type: string
+          description: 'Norwegian postal code, if available'
+          example: '0184'
+        city:
+          type: string
+          example: 'Oslo'
+        countryCode:
+          type: string
+          description: 'Country in ISO 3166-1 alpha-3 format'
+          example: 'NOR'
+        latitude:
+          type: number
+          description: 'Physical location of merchant'
+          example: '59.9141'
+        longitude:
+          type: number
+          description: 'Physical location of merchant'
+          example: '10.7533'
+        googlePlacesId:
+          type: string
+          description: 'Identifier used by google maps'
+          example: 'ChIJIVhJmmFuQUYRnsh2_97NPq8'
+        orgNum:
+          type: string
+          description: 'Organization number, as defined from Brønnøysundregisterne'
+          example: '918711309'
+  headers:
+    ETag:
+      description: 'Opaque string that changes when the underlying resource changes'
+      schema:
+        type: string
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+security:
+  - apiKey: []

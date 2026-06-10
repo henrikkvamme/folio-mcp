@@ -1,0 +1,48 @@
+{
+  "name": "@henrikkvamme/folio-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for the Folio business banking API (api.folio.no/v2) — accounts, transactions, events, payments and attachments as tools for Claude and other MCP clients",
+  "type": "module",
+  "license": "MIT",
+  "mcpName": "io.github.henrikkvamme/folio-mcp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/henrikkvamme/folio-mcp.git"
+  },
+  "keywords": ["mcp", "model-context-protocol", "folio", "banking", "norway", "claude"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "folio-mcp": "dist/stdio.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "bun run src/stdio.ts",
+    "start:http": "bun run src/http.ts",
+    "build": "tsdown",
+    "prepublishOnly": "tsc --noEmit && tsdown",
+    "build:mcpb": "bun build src/stdio.ts --target=node --outfile=mcpb/dist/index.js",
+    "mcpb": "bun run build:mcpb && bunx @anthropic-ai/mcpb pack mcpb folio-mcp.mcpb",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint src",
+    "fmt": "oxfmt src",
+    "inspect": "bunx @modelcontextprotocol/inspector bun run src/stdio.ts",
+    "mock": "bun run mock/server.ts"
+  },
+  "dependencies": {
+    "@hono/mcp": "^0.3.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "hono": "^4.7.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.0",
+    "oxfmt": "^0.1.0",
+    "oxlint": "^1.0.0",
+    "tsdown": "^0.12.0",
+    "typescript": "^5.7.0"
+  }
+}
