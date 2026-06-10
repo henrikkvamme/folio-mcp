@@ -1,28 +1,28 @@
 <!doctype html>
-<html lang="no">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>folio-mcp: Folio-kontoen din, rett i Claude</title>
-  <meta name="description" content="Åpen kildekode MCP-server som kobler Claude til Folio-bedriftskontoen din. Kjører lokalt, og API-nøkkelen forlater aldri maskinen din.">
-  <meta property="og:title" content="folio-mcp: Folio-kontoen din, rett i Claude">
-  <meta property="og:description" content="Spør Claude om saldo, transaksjoner og bilag. Last ned, dobbeltklikk, lim inn API-nøkkel. Ferdig.">
+  <title>folio-mcp: Your Folio account, right in Claude</title>
+  <meta name="description" content="Open source MCP server that connects Claude to your Folio business bank account. Runs locally, and your API key never leaves your machine.">
+  <meta property="og:title" content="folio-mcp: Your Folio account, right in Claude">
+  <meta property="og:description" content="Ask Claude about balances, transactions and receipts. Download, double-click, paste your API key. Done.">
   <meta property="og:image" content="https://folio-mcp.henrikkvamme.no/og.png">
-  <meta property="og:url" content="https://folio-mcp.henrikkvamme.no/">
+  <meta property="og:url" content="https://folio-mcp.henrikkvamme.no/en/">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="color-scheme" content="light">
-  <link rel="canonical" href="https://folio-mcp.henrikkvamme.no/">
+  <link rel="canonical" href="https://folio-mcp.henrikkvamme.no/en/">
   <link rel="alternate" hreflang="no" href="https://folio-mcp.henrikkvamme.no/">
   <link rel="alternate" hreflang="en" href="https://folio-mcp.henrikkvamme.no/en/">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="preload" href="fonts/hanken-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="preload" href="../fonts/hanken-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
   <style>
     @font-face {
       font-family: "Hanken Grotesk";
       font-style: normal;
       font-weight: 400 900;
       font-display: swap;
-      src: url("fonts/hanken-grotesk-latin.woff2") format("woff2");
+      src: url("../fonts/hanken-grotesk-latin.woff2") format("woff2");
     }
 
     :root {
@@ -262,7 +262,7 @@
         </svg>
         GitHub
       </a>
-      <a href="en/" hreflang="en" lang="en">English</a>
+      <a href="../" hreflang="no" lang="no">Norsk</a>
       <a href="https://www.npmjs.com/package/@henrikkvamme/folio-mcp">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
           <path d="M0 0v16h16V0H0zm13 13h-2V5H8v8H3V3h10v10z"/>
@@ -282,54 +282,54 @@
       </g>
     </svg>
 
-    <h1>Folio-kontoen din,<br>rett i Claude.</h1>
+    <h1>Your Folio account,<br>right in Claude.</h1>
 
     <p class="sub">
-      Spør om saldo, finn transaksjoner, last opp bilag og lag betalingsutkast.
-      Alt kjører lokalt, og API-nøkkelen lagres trygt i nøkkelringen på din maskin.
+      Check balances, find transactions, upload receipts and draft payments.
+      Everything runs locally, and your API key is stored safely in your machine's keychain.
     </p>
 
-    <p class="prompt"><span id="prompt-text">«Hvilke kortkjøp fra mai mangler kvittering?»</span></p>
+    <p class="prompt"><span id="prompt-text">“Which card purchases from May are missing receipts?”</span></p>
 
     <div class="steps">
       <div class="step">
         <span class="badge lilac">1</span>
         <div>
-          <b>Last ned</b>
-          <span>Hele verktøyet i én fil, <code>folio-mcp.mcpb</code></span>
+          <b>Download</b>
+          <span>The whole tool in one file, <code>folio-mcp.mcpb</code></span>
         </div>
       </div>
       <div class="step">
         <span class="badge coral">2</span>
         <div>
-          <b>Dobbeltklikk</b>
-          <span>Claude Desktop installerer den selv</span>
+          <b>Double-click</b>
+          <span>Claude Desktop installs it for you</span>
         </div>
       </div>
       <div class="step">
         <span class="badge mint">3</span>
         <div>
-          <b>Lim inn API-nøkkel</b>
-          <span>Hent den under <a href="https://app.folio.no/til/api-tilgang">API-tilgang i Folio</a></span>
+          <b>Paste your API key</b>
+          <span>Get it under <a href="https://app.folio.no/til/api-tilgang">API access in Folio</a></span>
         </div>
       </div>
     </div>
 
     <div>
       <a class="cta" href="https://github.com/henrikkvamme/folio-mcp/releases/latest/download/folio-mcp.mcpb">
-        Last ned for Claude&nbsp;Desktop
+        Download for Claude&nbsp;Desktop
       </a>
-      <span class="cta-meta">v0.1.0 · 177 kB · macOS og Windows · gratis</span>
+      <span class="cta-meta">v0.1.0 · 177 kB · macOS and Windows · free</span>
     </div>
 
-    <p class="dev">Bruker du Claude Code?
-      <button id="copy" type="button" title="Kopier kommandoen">npx -y @henrikkvamme/folio-mcp</button>
+    <p class="dev">Using Claude Code?
+      <button id="copy" type="button" title="Copy the command">npx -y @henrikkvamme/folio-mcp</button>
     </p>
   </main>
 
   <footer>
-    Åpen kildekode (MIT) · Uoffisielt prosjekt, ikke tilknyttet Folio ·
-    Betalinger blir kun utkast som du godkjenner i Folio-appen
+    Open source (MIT) · Unofficial project, not affiliated with Folio ·
+    Payments are only drafts that you approve in the Folio app
   </footer>
 
   <script type="application/ld+json">
@@ -339,20 +339,20 @@
     "name": "folio-mcp",
     "operatingSystem": "macOS, Windows",
     "applicationCategory": "FinanceApplication",
-    "description": "MCP-server som kobler Claude til Folio-bedriftskontoen din.",
+    "description": "MCP server that connects Claude to your Folio business bank account.",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "NOK" },
     "license": "https://opensource.org/license/mit",
-    "url": "https://folio-mcp.henrikkvamme.no/",
+    "url": "https://folio-mcp.henrikkvamme.no/en/",
     "downloadUrl": "https://github.com/henrikkvamme/folio-mcp/releases/latest/download/folio-mcp.mcpb"
   }
   </script>
 
   <script>
     const prompts = [
-      "«Hvilke kortkjøp fra mai mangler kvittering?»",
-      "«Hva brukte vi på markedsføring i fjor?»",
-      "«Legg dette bilaget på Clas Ohlson-kjøpet»",
-      "«Lag et utkast til husleia for juni»",
+      "“Which card purchases from May are missing receipts?”",
+      "“What did we spend on marketing last year?”",
+      "“Attach this receipt to the Clas Ohlson purchase”",
+      "“Draft the June rent payment”",
     ];
     const promptEl = document.getElementById("prompt-text");
     const animate = matchMedia("(prefers-reduced-motion: no-preference)").matches;
@@ -375,14 +375,14 @@
     copyBtn.addEventListener("click", async () => {
       try {
         await navigator.clipboard.writeText(command);
-        copyBtn.textContent = "Kopiert til utklippstavlen!";
+        copyBtn.textContent = "Copied to clipboard!";
         copyBtn.classList.add("copied");
         setTimeout(() => {
           copyBtn.textContent = command;
           copyBtn.classList.remove("copied");
         }, 1600);
       } catch {
-        copyBtn.title = "Kunne ikke kopiere, marker teksten manuelt";
+        copyBtn.title = "Could not copy, select the text manually";
       }
     });
   </script>
