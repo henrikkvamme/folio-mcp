@@ -128,6 +128,9 @@
       padding: 0.6rem 1.1rem;
       box-shadow: 3px 3px 0 var(--lavender);
     }
+    @media (prefers-reduced-motion: no-preference) {
+      .prompt span { transition: opacity 0.35s; }
+    }
 
     .steps {
       display: flex;
@@ -204,14 +207,19 @@
       font-size: 0.875rem;
       color: var(--muted);
     }
-    .dev code {
+    .dev button {
       font-family: var(--mono);
       font-size: 0.8rem;
+      color: var(--ink);
       background: #fff;
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 0.15rem 0.5rem;
+      padding: 0.2rem 0.55rem;
+      cursor: pointer;
     }
+    .dev button:hover { border-color: var(--purple); }
+    .dev button.copied { border-color: var(--mint); background: #E5F8F3; }
+    .dev button:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }
 
     footer {
       text-align: center;
@@ -277,7 +285,7 @@
       Alt kjører lokalt, og API-nøkkelen lagres trygt i nøkkelringen på din maskin.
     </p>
 
-    <p class="prompt">«Hvilke kortkjøp fra mai mangler kvittering?»</p>
+    <p class="prompt"><span id="prompt-text">«Hvilke kortkjøp fra mai mangler kvittering?»</span></p>
 
     <div class="steps">
       <div class="step">
@@ -310,12 +318,69 @@
       <span class="cta-meta">v0.1.0 · 177 kB · macOS og Windows · gratis</span>
     </div>
 
-    <p class="dev">Bruker du Claude Code? <code>npx -y @henrikkvamme/folio-mcp</code></p>
+    <p class="dev">Bruker du Claude Code?
+      <button id="copy" type="button" title="Kopier kommandoen">npx -y @henrikkvamme/folio-mcp</button>
+    </p>
   </main>
 
   <footer>
     Åpen kildekode (MIT) · Uoffisielt prosjekt, ikke tilknyttet Folio ·
     Betalinger blir kun utkast som du godkjenner i Folio-appen
   </footer>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "folio-mcp",
+    "operatingSystem": "macOS, Windows",
+    "applicationCategory": "FinanceApplication",
+    "description": "MCP-server som kobler Claude til Folio-bedriftskontoen din.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "NOK" },
+    "license": "https://opensource.org/license/mit",
+    "url": "https://henrikkvamme.github.io/folio-mcp/",
+    "downloadUrl": "https://github.com/henrikkvamme/folio-mcp/releases/latest/download/folio-mcp.mcpb"
+  }
+  </script>
+
+  <script>
+    const prompts = [
+      "«Hvilke kortkjøp fra mai mangler kvittering?»",
+      "«Hva brukte vi på markedsføring i fjor?»",
+      "«Legg dette bilaget på Clas Ohlson-kjøpet»",
+      "«Lag et utkast til husleia for juni»",
+    ];
+    const promptEl = document.getElementById("prompt-text");
+    const animate = matchMedia("(prefers-reduced-motion: no-preference)").matches;
+    let i = 0;
+    setInterval(() => {
+      i = (i + 1) % prompts.length;
+      if (animate) {
+        promptEl.style.opacity = "0";
+        setTimeout(() => {
+          promptEl.textContent = prompts[i];
+          promptEl.style.opacity = "1";
+        }, 350);
+      } else {
+        promptEl.textContent = prompts[i];
+      }
+    }, 4200);
+
+    const copyBtn = document.getElementById("copy");
+    const command = copyBtn.textContent.trim();
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(command);
+        copyBtn.textContent = "Kopiert til utklippstavlen!";
+        copyBtn.classList.add("copied");
+        setTimeout(() => {
+          copyBtn.textContent = command;
+          copyBtn.classList.remove("copied");
+        }, 1600);
+      } catch {
+        copyBtn.title = "Kunne ikke kopiere, marker teksten manuelt";
+      }
+    });
+  </script>
 </body>
 </html>
