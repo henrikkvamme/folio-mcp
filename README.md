@@ -6,7 +6,7 @@ An MCP server for the official [Folio API](https://api.folio.no/v2/api). It expo
 
 > *"Which card purchases from May are still missing receipts?"* · *"Upload this receipt to the Clas Ohlson purchase"* · *"What did we spend on advertising this quarter?"* · *"Draft the June rent payment"*
 
-This is an unofficial community project, not affiliated with Folio. Payments created through the API are always **drafts** that must be approved in the Folio app before any money moves.
+This is an unofficial community project, not affiliated with or endorsed by Folio. The Folio name belongs to its owner and is used here descriptively. Payments created through the API are always **drafts** that must be approved in the Folio app before any money moves.
 
 ## Install
 
