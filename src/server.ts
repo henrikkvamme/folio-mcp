@@ -160,7 +160,7 @@ export function createServer(folio: FolioClient): McpServer {
     {
       title: "List events",
       description:
-        "List events — anything that is or will become a transaction (card authorizations, payments in flight, booked transactions). Use this to find items missing receipts, purpose or other documentation (complete=false).",
+        "List events: anything that is or will become a transaction (card authorizations, payments in flight, booked transactions). Use this to find items missing receipts, purpose or other documentation (complete=false).",
       inputSchema: {
         startDate: isoDate.describe("Earliest date, inclusive (YYYY-MM-DD)"),
         endDate: isoDate
@@ -488,7 +488,7 @@ export function createServer(folio: FolioClient): McpServer {
           content: [
             {
               type: "text",
-              text: "kid and message are mutually exclusive — set only one.",
+              text: "kid and message are mutually exclusive. Set only one.",
             },
           ],
           isError: true,
@@ -514,7 +514,7 @@ export function createServer(folio: FolioClient): McpServer {
           {
             type: "text",
             text:
-              `Payment draft created — it must be approved in the Folio app before execution.\n` +
+              `Payment draft created. It must be approved in the Folio app before execution.\n` +
               JSON.stringify(result, null, 2),
           },
         ],

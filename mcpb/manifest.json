@@ -3,11 +3,12 @@
   "name": "folio-mcp",
   "display_name": "Folio",
   "version": "0.1.0",
-  "description": "Koble Claude til Folio-bedriftskontoen din — saldo, transaksjoner, bilag og betalinger.",
+  "description": "Koble Claude til Folio-bedriftskontoen din. Se saldo og transaksjoner, håndter bilag og lag betalingsutkast.",
   "long_description": "Gir Claude tilgang til Folio-kontoen din via Folios offisielle API: se kontoer og saldo, søk i transaksjoner og hendelser, last opp og ned bilag/kvitteringer, oppdater formål og deltakere for regnskapet, og opprett betalingsutkast (som alltid må godkjennes i Folio-appen før penger flyttes).",
   "author": {
     "name": "Henrik Halvorsen Kvamme"
   },
+  "icon": "icon.png",
   "server": {
     "type": "node",
     "entry_point": "dist/index.js",

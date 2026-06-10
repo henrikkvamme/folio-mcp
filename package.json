@@ -1,7 +1,7 @@
 {
   "name": "@henrikkvamme/folio-mcp",
   "version": "0.1.0",
-  "description": "MCP server for the Folio business banking API (api.folio.no/v2) — accounts, transactions, events, payments and attachments as tools for Claude and other MCP clients",
+  "description": "MCP server for the Folio business banking API (api.folio.no/v2). Gives Claude and other MCP clients tools for accounts, transactions, events, payments and attachments.",
   "type": "module",
   "license": "MIT",
   "mcpName": "io.github.henrikkvamme/folio-mcp",

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * stdio entry point — for local use from Claude Code / Claude Desktop:
+ * stdio entry point for local use from Claude Code / Claude Desktop:
  *   claude mcp add folio --env FOLIO_API_KEY=... -- bun run /path/to/folio-mcp/src/stdio.ts
  *
  * stdout is reserved for the MCP protocol; log only to stderr.

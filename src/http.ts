@@ -1,12 +1,12 @@
 /**
- * Streamable HTTP entry point (Hono, stateless) — for remote use, e.g. on a VPS:
+ * Streamable HTTP entry point (Hono, stateless) for remote use, e.g. on a VPS:
  *   MCP_AUTH_TOKEN=... FOLIO_API_KEY=... bun run src/http.ts
  *
  * Connect with:
  *   claude mcp add --transport http folio https://host/mcp --header "Authorization: Bearer $MCP_AUTH_TOKEN"
  *
  * Stateless mode: a fresh McpServer + transport per request (recommended for
- * simple request/response tool servers — no session bookkeeping, restart-safe).
+ * simple request/response tool servers: no session bookkeeping, restart-safe).
  */
 import { StreamableHTTPTransport } from "@hono/mcp"
 import { Hono } from "hono"
@@ -17,7 +17,7 @@ import { createServer } from "./server.js"
 const token = process.env.MCP_AUTH_TOKEN
 if (!token) {
   console.error(
-    "MCP_AUTH_TOKEN is not set — refusing to serve a banking API without auth.",
+    "MCP_AUTH_TOKEN is not set. Refusing to serve a banking API without auth.",
   )
   process.exit(1)
 }
