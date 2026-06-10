@@ -6,7 +6,7 @@
   "description": "Koble Claude til Folio-bedriftskontoen din. Se saldo og transaksjoner, håndter bilag og lag betalingsutkast.",
   "long_description": "Gir Claude tilgang til Folio-kontoen din via Folios offisielle API: se kontoer og saldo, søk i transaksjoner og hendelser, last opp og ned bilag/kvitteringer, oppdater formål og deltakere for regnskapet, og opprett betalingsutkast (som alltid må godkjennes i Folio-appen før penger flyttes).",
   "author": {
-    "name": "Henrik Halvorsen Kvamme"
+    "name": "Henrik Kvamme"
   },
   "icon": "icon.png",
   "server": {
